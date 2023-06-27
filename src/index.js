@@ -26,6 +26,6 @@ app.use((err, req, res, next) => {
   });
 });
 // Declaración y uso del puerto
-const puerto = 3000; // Definir el número de puerto
+const puerto = 3000 || 4500; // Definir el número de puerto
 app.listen(puerto); // Escuchar en el puerto especificado
 console.log(`Servidor corriendo en el puerto ${puerto}`); // Mostrar un mensaje en la consola indicando el puerto en el que se está ejecutando el servidor
