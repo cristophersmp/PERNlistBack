@@ -35,7 +35,7 @@ router.put("/tareas/:id", editarTarea);
 //Ruta POST para la creación de un usuario
 router.post("/post/registro", crearUsuario);
 //Ruta POST para el login del usuario
-router.post("/post/login", loguearUsuario);
+router.get("/post/login", loguearUsuario);
 
 //Exportación de las rutas con sus métodos
 module.exports = router;
