@@ -144,7 +144,7 @@ const loguearUsuario = async (req, res) => {
     }
 
     // Generar un token JWT
-    const token = jwt.sign({ id: usuario.id }, "tu_clave_secreta", {
+    const token = jwt.sign({ id: usuario.id }, llaveSecreta, {
       expiresIn: "1h",
     });
 
