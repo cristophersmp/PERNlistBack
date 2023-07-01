@@ -15,6 +15,10 @@ const {
 // Crea una instancia del enrrutador
 const router = Router();
 
+router.get("/", (req, res) => {
+  res.json({ mensaje: "El servidor está funcionando correctamente" });
+});
+
 //:::::::::::::::RUTAS PARA TAREAS:::::::::::::::::::::
 //Ruta GET para traer todas las tareas
 router.get("/tareas", getTareas, verificarToken);
