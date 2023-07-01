@@ -85,50 +85,73 @@ const editarTarea = async (req, res) => {
 
 //:::::::::::::::CALLBACKS PARA USUARIOS:::::::::::::::::::::
 // Registra una usuario
-const crearUsuario = async (req, res, next) => {
+const crearUsuario = async (req, res) => {
   try {
     const { nombre, correo, contrasena } = req.body;
-    const contrasenaHashed = bcrypt.hashSync(contrasena, saltRounds);
-    contrasena = contrasenaHashed;
 
-    const newUsuario = await pool.query(
-      "INSERT INTO tablausuarios (nombre, correo, contrasenaHashed) VALUES($1, $2, $3) RETURNING *",
-      [nombre, correo, contrasenaHashed]
+    // Verificar si el correo ya está registrado
+    const result = await pool.query(
+      "SELECT * FROM tablausuarios WHERE correo = $1",
+      [correo]
     );
-    res.send("Usuario registrado con éxito");
+    if (result.rows.length > 0) {
+      return res.status(400).json({ mensaje: "El correo ya está registrado" });
+    }
+
+    // Encriptar la contraseña
+    const salt = await bcrypt.genSalt(10);
+    const contrasenaEncriptada = await bcrypt.hash(contrasena, salt);
+
+    // Guardar el nuevo usuario en la base de datos
+    await pool.query(
+      "INSERT INTO tablausuarios (nombre, correo, contrasena) VALUES ($1, $2, $3)",
+      [nombre, correo, contrasenaEncriptada]
+    );
+
+    res.status(201).json({ mensaje: "Usuario registrado con éxito" });
   } catch (error) {
-    next(error);
+    console.error(error);
+    res.status(500).json({ mensaje: "Error al registrar el usuario" });
   }
 };
 
 const loguearUsuario = async (req, res) => {
   try {
     const { correo, contrasena } = req.body;
-    const usuario = await pool.query(
+
+    // Verificar si el correo está registrado
+    const result = await pool.query(
       "SELECT * FROM tablausuarios WHERE correo = $1",
       [correo]
     );
-
-    if (usuario.rows.length === 0) {
-      return res.status(400).json({ error: "Correo o contraseña incorrectos" });
+    if (result.rows.length === 0) {
+      return res
+        .status(400)
+        .json({ mensaje: "Correo o contraseña incorrectos" });
     }
 
-    const contrasenaValida = bcrypt.compareSync(
+    const usuario = result.rows[0];
+
+    // Verificar si la contraseña es correcta
+    const esContrasenaCorrecta = await bcrypt.compare(
       contrasena,
-      usuario.rows[0].contrasena
+      usuario.contrasena
     );
-
-    if (!contrasenaValida) {
-      return res.status(400).json({ error: "Correo o contraseña incorrectos" });
+    if (!esContrasenaCorrecta) {
+      return res
+        .status(400)
+        .json({ mensaje: "Correo o contraseña incorrectos" });
     }
 
-    const token = jwt.sign({ id: usuario.rows[0].id }, llaveSecreta, {
+    // Generar un token JWT
+    const token = jwt.sign({ id: usuario.id }, "tu_clave_secreta", {
       expiresIn: "1h",
     });
+
     res.json({ token });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "Ocurrió un error en el servidor" });
+    console.error(error);
+    res.status(500).json({ mensaje: "Error al iniciar sesión" });
   }
 };
 //::::::::::::::::::::::::::::::::::::::::::::
