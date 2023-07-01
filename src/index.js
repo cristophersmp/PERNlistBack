@@ -7,7 +7,7 @@ const morgan = require("morgan");
 const router = require("./routes/tareas.rutas.js");
 
 const corsOptions = {
-  origin: "pernlist-back.vercel.app",
+  origin: "https://per-nlist-front.vercel.app",
   optionsSuccessStatus: 200, // Algunos navegadores pueden requerir un código de estado explícito para permitir las respuestas con CORS.
 };
 
