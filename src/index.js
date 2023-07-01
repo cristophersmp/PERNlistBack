@@ -6,11 +6,16 @@ const morgan = require("morgan");
 // Importa el archivo de router de tareas
 const router = require("./routes/tareas.rutas.js");
 
+const corsOptions = {
+  origin: "pernlist-back.vercel.app",
+  optionsSuccessStatus: 200, // Algunos navegadores pueden requerir un código de estado explícito para permitir las respuestas con CORS.
+};
+
 // Crea una instancia de la aplicación express
 const app = express();
 
 // Declaración de uso de módulos Middlewares
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
