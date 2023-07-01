@@ -7,8 +7,11 @@ const morgan = require("morgan");
 const router = require("./routes/tareas.rutas.js");
 
 const corsOptions = {
-  origin: "https://per-nlist-front.vercel.app",
-  optionsSuccessStatus: 200, // Algunos navegadores pueden requerir un código de estado explícito para permitir las respuestas con CORS.
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+  preflightContinue: true,
 };
 
 // Crea una instancia de la aplicación express
